@@ -1,0 +1,46 @@
+# macOS
+.DS_Store
+
+# IDE設定
+.idea/
+.vscode/
+
+# セッション環境変数（機密情報を含む）
+session-env/
+
+# セッション履歴（入力内容が含まれる）
+history.jsonl
+
+# プラグイン設定（環境固有）
+plugins/
+
+# デバッグファイル
+debug/
+*.log
+
+# ファイル履歴（セッション固有）
+file-history/
+
+# 統計情報
+statsig/
+
+# シェルスナップショット
+shell-snapshots/
+
+# TODOファイル（セッション固有）
+todos/
+
+# プロジェクト固有の一時データ
+projects/
+
+# その他の一時ファイル
+*.tmp
+*.swp
+*~
+
+# 認証・トークン関連
+*.token
+*.key
+*.pem
+.env
+.env.*

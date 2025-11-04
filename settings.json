@@ -1,0 +1,57 @@
+{
+  "alwaysThinkingEnabled": true,
+  "includeCoAuthoredBy": false,
+  "permissions": {
+    "deny": [
+      "Bash(git push:*)",
+      "Bash(git push --force:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(sudo:*)",
+      "Bash(rm -rf:*)",
+      "Bash(chmod 777:*)",
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(*.token)",
+      "Read(*.key)",
+      "Read(*.pem)",
+      "Read(**/id_rsa)",
+      "Read(**/id_dsa)",
+      "Read(**/.ssh/id_*)",
+      "Write(.env)",
+      "Write(.env.*)",
+      "Write(*.token)",
+      "Write(*.key)",
+      "Write(*.pem)"
+    ],
+    "ask": [
+      "Bash(git commit:*)",
+      "Bash(git add:*)",
+      "Bash(curl:*)",
+      "Bash(wget:*)",
+      "Bash(npm publish:*)",
+      "Bash(yarn publish:*)",
+      "Bash(docker:*)",
+      "Bash(kubectl:*)",
+      "Bash(rm:*)",
+      "Bash(mv:*)",
+      "Bash(chmod:*)"
+    ],
+    "allow": [
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git branch:*)",
+      "Bash(git checkout:*)",
+      "Bash(git fetch:*)",
+      "Bash(git pull:*)",
+      "Bash(ls:*)",
+      "Bash(cd:*)",
+      "Bash(pwd:*)",
+      "Bash(cat:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)"
+    ],
+    "disableBypassPermissionsMode": "disable"
+  }
+}
