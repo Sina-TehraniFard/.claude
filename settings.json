@@ -1,7 +1,22 @@
 {
-  "alwaysThinkingEnabled": true,
   "includeCoAuthoredBy": false,
   "permissions": {
+    "allow": [
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git branch:*)",
+      "Bash(git checkout:*)",
+      "Bash(git fetch:*)",
+      "Bash(git pull:*)",
+      "Bash(ls:*)",
+      "Bash(cd:*)",
+      "Bash(pwd:*)",
+      "Bash(cat:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)"
+    ],
     "deny": [
       "Bash(git push:*)",
       "Bash(git push --force:*)",
@@ -25,8 +40,6 @@
     ],
     "ask": [
       "Bash(git commit:*)",
-      "Bash(git add:*)",
-      "Bash(curl:*)",
       "Bash(wget:*)",
       "Bash(npm publish:*)",
       "Bash(yarn publish:*)",
@@ -36,22 +49,7 @@
       "Bash(mv:*)",
       "Bash(chmod:*)"
     ],
-    "allow": [
-      "Bash(git status:*)",
-      "Bash(git diff:*)",
-      "Bash(git log:*)",
-      "Bash(git show:*)",
-      "Bash(git branch:*)",
-      "Bash(git checkout:*)",
-      "Bash(git fetch:*)",
-      "Bash(git pull:*)",
-      "Bash(ls:*)",
-      "Bash(cd:*)",
-      "Bash(pwd:*)",
-      "Bash(cat:*)",
-      "Bash(grep:*)",
-      "Bash(find:*)"
-    ],
     "disableBypassPermissionsMode": "disable"
-  }
+  },
+  "alwaysThinkingEnabled": false
 }
