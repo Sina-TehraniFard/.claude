@@ -4,9 +4,11 @@ argument-hint: "[task description or 'interactive']"
 allowed-tools: "Read, Write, AskUserQuestion"
 ---
 
-# /cmd-gen
+# /c-cmd-gen
 
 Claude Codeのベストプラクティスに準拠した高品質なカスタムコマンドを生成します。
+
+**重要**: 生成するすべてのコマンドには必ず `c-` プレフィックスを付けます。
 
 ---
 
@@ -127,7 +129,7 @@ argument-hint: "[引数のヒント]"
 allowed-tools: "[ツールリスト]"
 ---
 
-# /コマンド名
+# /c-コマンド名
 
 [コマンドの目的と概要を1-2文で説明]
 
@@ -205,13 +207,13 @@ allowed-tools: "[ツールリスト]"
 
 ```bash
 # パターン1: 基本的な使用
-/コマンド名 [基本的な引数]
+/c-コマンド名 [基本的な引数]
 
 # パターン2: オプション付き
-/コマンド名 [引数] --option
+/c-コマンド名 [引数] --option
 
 # パターン3: 対話モード（該当する場合）
-/コマンド名 interactive
+/c-コマンド名 interactive
 ```
 
 ### 4.2 想定されるユースケース
@@ -239,17 +241,18 @@ allowed-tools: "[ツールリスト]"
 
 以下の形式でファイル名を提案し、保存します：
 
-**デフォルト保存先**: `~/.claude/commands/[コマンド名].md`
+**デフォルト保存先**: `~/.claude/commands/c-[コマンド名].md`
 
 **ファイル名の命名規則**：
+- **必須**: `c-` プレフィックスを付ける
 - 小文字とハイフンを使用
-- 動詞で始める（例: `review-`, `generate-`, `check-`）
+- 動詞で始める（例: `c-review-`, `c-generate-`, `c-check-`）
 - 簡潔に（15文字以内が理想）
 
 **例**：
-- `/review-code` → `review-code.md`
-- `/gen-docs` → `gen-docs.md`
-- `/check-quality` → `check-quality.md`
+- `/c-review-code` → `c-review-code.md`
+- `/c-gen-docs` → `c-gen-docs.md`
+- `/c-check-quality` → `c-check-quality.md`
 
 ---
 
@@ -344,9 +347,9 @@ allowed-tools: "Read, Write, Edit, Bash"
 ### 1. 明確な責任範囲
 
 コマンドは「一つのことを上手くやる」べきです：
-- ✅ `/review-security` - セキュリティに特化
-- ✅ `/gen-readme` - READMEのみ生成
-- ❌ `/do-everything` - 多すぎる責任
+- ✅ `/c-review-security` - セキュリティに特化
+- ✅ `/c-gen-readme` - READMEのみ生成
+- ❌ `/c-do-everything` - 多すぎる責任
 
 ### 2. 予測可能な動作
 
@@ -386,7 +389,7 @@ v4: パフォーマンス最適化
 ## 生成されたカスタムコマンド
 
 ### コマンド概要
-- **コマンド名**: /[コマンド名]
+- **コマンド名**: /c-[コマンド名]
 - **目的**: [一行説明]
 - **対象ユーザー**: [誰が使うか]
 
@@ -446,4 +449,4 @@ v4: パフォーマンス最適化
 2. チームで共有する場合はドキュメント充実を
 3. 定期的な見直しとメンテナンスを実施
 
-必要に応じて「/cmd-gen interactive」で対話的に再生成できます。
+必要に応じて「/c-cmd-gen interactive」で対話的に再生成できます。
