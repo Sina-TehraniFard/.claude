@@ -43,7 +43,6 @@
       "Bash(wget:*)",
       "Bash(npm publish:*)",
       "Bash(yarn publish:*)",
-      "Bash(docker:*)",
       "Bash(kubectl:*)",
       "Bash(rm:*)",
       "Bash(mv:*)",
