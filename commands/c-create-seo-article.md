@@ -473,7 +473,57 @@ H2見出し（メインセクション）の形式パターン：
 - コードの後には重要なポイントを補足
 - 検証環境やバージョンを明記（E-E-A-T）
 
-### 6-4. リンクの記載ルール
+### 6-4. Mermaid図の追加（必須）
+
+記事の理解を深めるため、適切な箇所にMermaid図を追加します。
+
+Mermaid図の種類と用途：
+
+1. フローチャート（flowchart）
+   - 処理の流れ、意思決定プロセス
+   - 例: インストール手順、設定フロー
+
+2. シーケンス図（sequenceDiagram）
+   - システム間のやり取り、API通信
+   - 例: リクエスト/レスポンスの流れ
+
+3. 状態遷移図（stateDiagram-v2）
+   - 状態の変化、ライフサイクル
+   - 例: タスクの状態遷移
+
+4. クラス図（classDiagram）
+   - 構造、関係性
+   - 例: アーキテクチャ概要
+
+Mermaid図の配置ルール：
+- 各メインセクション（H2）に最低1つのMermaid図を検討
+- 図の前に説明文を配置
+- 図の後に補足説明を追加
+- 複雑な概念の説明には積極的に使用
+
+Mermaid記法の例：
+```
+以下の図は、処理の流れを示しています。
+
+\`\`\`mermaid
+flowchart TD
+    A[開始] --> B{条件分岐}
+    B -->|Yes| C[処理A]
+    B -->|No| D[処理B]
+    C --> E[終了]
+    D --> E
+\`\`\`
+
+この図のように、条件に応じて処理が分岐します。
+```
+
+Mermaid図の品質基準：
+- ノード数は10個以内を目安
+- 日本語ラベルを使用
+- 色分けは必要な場合のみ
+- 複雑すぎる場合は分割
+
+### 6-5. リンクの記載ルール
 
 配置ルール：
 - リンクは必ず見出しの終わり（次の見出しの直前）または記事の終わりに配置
@@ -499,7 +549,63 @@ NG: エンジニアのためのブログ→https://qiita.com/
 NG: エンジニアのためのブログ: https://qiita.com/
 ```
 
-### 6-5. 品質チェックリスト
+### 6-6. Claude Code関連の参考リンク追加
+
+記事がClaude Codeに関連する内容の場合、以下の参考リンクを「終わりに」セクションの後に追加します。
+
+追加条件：
+- 記事の主題がClaude Code、Claude、AIコーディングアシスタントに関連する場合
+- 記事内でClaude Codeの機能や使い方に言及している場合
+
+参考リンクセクションのフォーマット：
+```
+## 参考リンク
+
+Claude Codeについてさらに詳しく知りたい方は、以下のリソースをご参照ください。
+
+Claude Code公式ドキュメント
+https://docs.anthropic.com/en/docs/claude-code
+
+Claude Code GitHub リポジトリ
+https://github.com/anthropics/claude-code
+
+Anthropic公式サイト
+https://www.anthropic.com/
+
+Claude APIドキュメント
+https://docs.anthropic.com/en/api
+```
+
+状況に応じて追加できるリンク：
+
+開発者向け：
+```
+Claude Code CLI リファレンス
+https://docs.anthropic.com/en/docs/claude-code/cli-reference
+
+Claude Code カスタムコマンド
+https://docs.anthropic.com/en/docs/claude-code/slash-commands
+
+Claude Code MCP統合
+https://docs.anthropic.com/en/docs/claude-code/mcp
+```
+
+学習リソース：
+```
+Anthropic Cookbook（実践的なサンプル集）
+https://github.com/anthropics/anthropic-cookbook
+
+Prompt Engineering Guide
+https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering
+```
+
+重要な注意：
+- 参考リンクセクションは「終わりに」の後、記事の最後に配置
+- リンクは必ず独立した行で記載（本コマンドのリンク記載ルールに準拠）
+- 記事の内容と無関係なリンクは追加しない
+- リンク切れがないか確認すること
+
+### 6-7. 品質チェックリスト
 
 構造チェック：
 - [ ] フロントマターが完全に記載されている
@@ -533,6 +639,18 @@ E-E-A-Tチェック：
 - [ ] リンクが独立した行を占有している
 - [ ] リンクの説明文とURLが別の行に記載されている
 - [ ] Markdownリンク記法が使用されていない
+
+Mermaid図チェック：
+- [ ] 記事内に最低1つのMermaid図が含まれている
+- [ ] Mermaid図の前後に説明文がある
+- [ ] 図のノード数が適切（10個以内目安）
+- [ ] 日本語ラベルが使用されている
+
+参考リンクチェック（Claude Code関連記事の場合）：
+- [ ] 「参考リンク」セクションが「終わりに」の後に配置されている
+- [ ] Claude Code公式ドキュメントへのリンクが含まれている
+- [ ] リンクが独立した行で記載されている
+- [ ] 記事内容に関連するリンクのみが含まれている
 
 禁止事項チェック：
 - [ ] 「Claude」「AI」「自動生成」などの言葉が含まれていない
