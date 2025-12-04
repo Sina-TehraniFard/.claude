@@ -50,8 +50,10 @@
     ],
     "disableBypassPermissionsMode": "disable"
   },
+  "model": "sonnet",
   "enabledPlugins": {
+    "sample-plugin@claude-code-marketplace": false,
     "asken-backend@claude-code-marketplace": true
   },
-  "alwaysThinkingEnabled": true
+  "alwaysThinkingEnabled": false
 }
