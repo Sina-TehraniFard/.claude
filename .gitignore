@@ -44,3 +44,5 @@ projects/
 *.pem
 .env
 .env.*
+.credentials.json
+settings.local.json
