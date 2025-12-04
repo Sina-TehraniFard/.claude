@@ -50,5 +50,8 @@
     ],
     "disableBypassPermissionsMode": "disable"
   },
-  "alwaysThinkingEnabled": false
+  "enabledPlugins": {
+    "asken-backend@claude-code-marketplace": true
+  },
+  "alwaysThinkingEnabled": true
 }
