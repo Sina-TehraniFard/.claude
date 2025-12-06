@@ -46,3 +46,6 @@ projects/
 .env.*
 .credentials.json
 settings.local.json
+
+# IDE一時ファイル
+ide/
