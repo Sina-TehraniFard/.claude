@@ -20,39 +20,25 @@
     "deny": [
       "Bash(git push:*)",
       "Bash(git push --force:*)",
-      "Bash(git reset --hard:*)",
-      "Bash(sudo:*)",
-      "Bash(rm -rf:*)",
-      "Bash(chmod 777:*)",
-      "Read(.env)",
-      "Read(.env.*)",
       "Read(*.token)",
       "Read(*.key)",
       "Read(*.pem)",
       "Read(**/id_rsa)",
       "Read(**/id_dsa)",
-      "Read(**/.ssh/id_*)",
-      "Write(.env)",
-      "Write(.env.*)",
-      "Write(*.token)",
-      "Write(*.key)",
-      "Write(*.pem)"
+      "Read(**/.ssh/id_*)"
     ],
     "ask": [
-      "Bash(git commit:*)",
       "Bash(wget:*)",
       "Bash(npm publish:*)",
       "Bash(yarn publish:*)",
-      "Bash(kubectl:*)",
-      "Bash(rm:*)",
-      "Bash(mv:*)",
-      "Bash(chmod:*)"
+      "Bash(kubectl:*)"
     ],
     "disableBypassPermissionsMode": "disable"
   },
   "enabledPlugins": {
-    "sample-plugin@claude-code-marketplace": false,
-    "asken-backend@claude-code-marketplace": true
-  },
-  "alwaysThinkingEnabled": true
+    "php-lsp@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "context7@claude-plugins-official": true,
+    "github@claude-plugins-official": true
+  }
 }
