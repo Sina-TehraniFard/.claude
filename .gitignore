@@ -23,6 +23,10 @@ file-history/
 
 # 統計情報
 statsig/
+stats-cache.json
+
+# テレメトリ（device_id等の識別子を含む）
+telemetry/
 
 # シェルスナップショット
 shell-snapshots/
