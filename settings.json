@@ -2,24 +2,13 @@
   "includeCoAuthoredBy": false,
   "permissions": {
     "allow": [
-      "Bash(git status:*)",
-      "Bash(git diff:*)",
-      "Bash(git log:*)",
-      "Bash(git show:*)",
-      "Bash(git branch:*)",
-      "Bash(git checkout:*)",
-      "Bash(git fetch:*)",
-      "Bash(git pull:*)",
-      "Bash(ls:*)",
-      "Bash(cd:*)",
-      "Bash(pwd:*)",
-      "Bash(cat:*)",
-      "Bash(grep:*)",
-      "Bash(find:*)"
+      "Bash",
+      "Read",
+      "Edit",
+      "Write"
     ],
     "deny": [
       "Bash(git push:*)",
-      "Bash(git push --force:*)",
       "Read(*.token)",
       "Read(*.key)",
       "Read(*.pem)",
@@ -28,10 +17,15 @@
       "Read(**/.ssh/id_*)"
     ],
     "ask": [
-      "Bash(wget:*)",
-      "Bash(npm publish:*)",
-      "Bash(yarn publish:*)",
-      "Bash(kubectl:*)"
+      "Bash(rm:*)",
+      "Bash(rm -rf:*)",
+      "Bash(rm -r:*)",
+      "Edit(*env*)",
+      "Edit(*.env)",
+      "Edit(*.env.*)",
+      "Write(*env*)",
+      "Write(*.env)",
+      "Write(*.env.*)"
     ],
     "disableBypassPermissionsMode": "disable"
   },
@@ -39,6 +33,9 @@
     "php-lsp@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
     "context7@claude-plugins-official": true,
-    "github@claude-plugins-official": true
-  }
+    "github@claude-plugins-official": true,
+    "development-backend@asken-claude-code-marketplace": true,
+    "development-mobile@asken-claude-code-marketplace": true
+  },
+  "language": "日本語"
 }
