@@ -54,3 +54,7 @@ settings.json
 
 # IDE一時ファイル
 ide/
+
+*-cache
+cache
+plans
