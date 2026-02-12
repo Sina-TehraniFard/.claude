@@ -58,3 +58,11 @@ ide/
 *-cache
 cache
 plans
+
+# Pythonキャッシュ
+__pycache__/
+
+# ローカル環境固有
+powerline/
+statusline.sh
+tasks/

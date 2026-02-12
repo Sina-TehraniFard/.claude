@@ -37,5 +37,9 @@
     "development-backend@asken-claude-code-marketplace": true,
     "development-mobile@asken-claude-code-marketplace": true
   },
-  "language": "日本語"
+  "language": "日本語",
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh"
+  }
 }
