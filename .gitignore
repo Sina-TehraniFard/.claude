@@ -64,5 +64,4 @@ __pycache__/
 
 # ローカル環境固有
 powerline/
-statusline.sh
 tasks/
