@@ -29,17 +29,20 @@
     ],
     "disableBypassPermissionsMode": "disable"
   },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh"
+  },
   "enabledPlugins": {
     "php-lsp@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
     "context7@claude-plugins-official": true,
     "github@claude-plugins-official": true,
     "development-backend@asken-claude-code-marketplace": true,
-    "development-mobile@asken-claude-code-marketplace": true
+    "development-mobile@asken-claude-code-marketplace": true,
+    "plugin-dev@claude-code-plugins": true
   },
   "language": "日本語",
-  "statusLine": {
-    "type": "command",
-    "command": "~/.claude/statusline.sh"
-  }
+  "effortLevel": "medium",
+  "model": "sonnet"
 }
