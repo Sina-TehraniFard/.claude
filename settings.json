@@ -29,6 +29,7 @@
     ],
     "disableBypassPermissionsMode": "disable"
   },
+  "model": "sonnet",
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh"
@@ -44,5 +45,12 @@
   },
   "language": "日本語",
   "effortLevel": "medium",
-  "model": "sonnet"
+  "extraKnownMarketplaces": {
+    "claude-code-warp": {
+      "source": {
+        "source": "github",
+        "repo": "warpdotdev/claude-code-warp"
+      }
+    }
+  }
 }
