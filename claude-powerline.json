@@ -1,0 +1,41 @@
+{
+  "theme": "custom",
+  "display": {
+    "style": "capsule",
+    "charset": "unicode",
+    "padding": 0,
+    "lines": [
+      {
+        "segments": {
+          "directory": { "enabled": true, "style": "basename" },
+          "git": { "enabled": true, "showWorkingTree": false }
+        }
+      },
+      {
+        "segments": {
+          "context": { "enabled": true, "displayStyle": "filled", "showPercentageOnly": true, "percentageMode": "remaining" },
+          "block": { "enabled": true, "displayStyle": "filled", "type": "time", "burnType": "none" },
+          "weekly": { "enabled": true, "displayStyle": "filled" }
+        }
+      }
+    ]
+  },
+  "colors": {
+    "custom": {
+      "directory":       { "bg": "#0a0a10", "fg": "#f0e6d2" },
+      "context":         { "bg": "#0a0a10", "fg": "#d4a840" },
+      "contextWarning":  { "bg": "#2a1a00", "fg": "#f0b020" },
+      "contextCritical": { "bg": "#2a0a0e", "fg": "#ff3838" },
+      "block":           { "bg": "#0a0a10", "fg": "#c07ae0" },
+      "weekly":          { "bg": "#0a0a10", "fg": "#40b8a0" },
+      "git":             { "bg": "#0a0a10", "fg": "#8a7d6a" },
+      "model":           { "bg": "#0a0a10", "fg": "#b8a890" },
+      "session":         { "bg": "#0a0a10", "fg": "#8a7d6a" },
+      "today":           { "bg": "#0a0a10", "fg": "#8a7d6a" },
+      "metrics":         { "bg": "#0a0a10", "fg": "#8a7d6a" },
+      "version":         { "bg": "#0a0a10", "fg": "#8a7d6a" },
+      "tmux":            { "bg": "#0a0a10", "fg": "#8a7d6a" },
+      "env":             { "bg": "#0a0a10", "fg": "#8a7d6a" }
+    }
+  }
+}

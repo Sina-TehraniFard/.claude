@@ -8,7 +8,6 @@
       "Write"
     ],
     "deny": [
-      "Bash(git push:*)",
       "Read(*.token)",
       "Read(*.key)",
       "Read(*.pem)",
@@ -25,14 +24,15 @@
       "Edit(*.env.*)",
       "Write(*env*)",
       "Write(*.env)",
-      "Write(*.env.*)"
+      "Write(*.env.*)",
+      "Bash(git push:*)"
     ],
     "disableBypassPermissionsMode": "disable"
   },
   "model": "sonnet",
   "statusLine": {
     "type": "command",
-    "command": "~/.claude/statusline.sh"
+    "command": "npx -y @owloops/claude-powerline@latest --config /Users/tehrani/.claude/claude-powerline.json 2>/dev/null"
   },
   "enabledPlugins": {
     "php-lsp@claude-plugins-official": true,
@@ -41,10 +41,12 @@
     "github@claude-plugins-official": true,
     "development-backend@asken-claude-code-marketplace": true,
     "development-mobile@asken-claude-code-marketplace": true,
-    "plugin-dev@claude-code-plugins": true
+    "plugin-dev@claude-code-plugins": true,
+    "rust-analyzer-lsp@claude-plugins-official": true
   },
   "language": "日本語",
   "effortLevel": "medium",
+  "voiceEnabled": true,
   "extraKnownMarketplaces": {
     "claude-code-warp": {
       "source": {

@@ -69,3 +69,5 @@ tasks/
 # 自動生成バックアップ・使用統計
 backups/
 usage-data/
+sessions/
+*.bak
