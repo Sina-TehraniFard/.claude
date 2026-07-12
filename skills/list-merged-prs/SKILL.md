@@ -1,6 +1,6 @@
 ---
 name: list-merged-prs
-description: 現在のブランチにマージされたPRを列挙。PR一覧、マージ済みPR確認に関するリクエストで使用
+description: 現在のブランチに取り込まれたマージ済みPRのURLを列挙。「マージ済みPR一覧」「このブランチにマージされたPRを確認」のようなマージ済みPRに関するリクエストで使用
 allowed-tools: Bash
 ---
 
@@ -15,15 +15,12 @@ allowed-tools: Bash
 git branch --show-current
 ```
 
-### 2. masterからの差分でマージコミットを確認
+### 2. 現在のブランチをベースにマージされたPRを取得
 ```bash
-git log master..<現在のブランチ> --oneline --merges
+gh pr list --state merged --base <現在のブランチ> --json number,title,url
 ```
 
-### 3. PR番号を抽出してURLを列挙
-```bash
-for pr in <PR番号リスト>; do gh pr view $pr --json url --jq '.url'; done
-```
+Squash merge / Rebase merge 運用でもGitHub側のマージ済み情報を直接参照するため漏れなく取得できる。件数が多い場合は `--limit` で調整する。
 
 ## 出力形式
 
