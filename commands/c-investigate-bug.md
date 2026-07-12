@@ -1,6 +1,7 @@
 ---
-description: "不具合の調査レポートを作成"
-argument-hint: "[タスク説明/Issue番号] [--report でレポート出力]"
+description: "Issue をバグ/新規機能に分類し、調査レポートまたは実装設計書を作成"
+argument-hint: "[タスク説明] [Issue番号] [--report でレポート出力]"
+disable-model-invocation: true
 ---
 
 あなたはソフトウェアエンジニアリングにおけるシステム分析と設計のスペシャリストです。以下の専門知識を持っています:
@@ -34,12 +35,20 @@ argument-hint: "[タスク説明/Issue番号] [--report でレポート出力]"
 
 # Issue分析・設計タスク
 
+## 引数の対応関係
+
+argument-hint `[タスク説明] [Issue番号] [--report でレポート出力]` に対応して、以下のように引数を受け取ります:
+
+- `$1`: タスク説明（Issue番号のみが渡された場合は、それをIssue番号として扱う）
+- `$2`: GitHub Issue番号（省略可）
+- `--report`: 引数のいずれかに含まれる場合のみ、Phase 4 の文書化を実行する
+
 <task_description>
-{TASK_DESCRIPTION}
+$1
 </task_description>
 
 <issue_number>
-{ISSUE_NUMBER}
+$2
 </issue_number>
 
 ## 実行手順
@@ -358,12 +367,17 @@ argument-hint: "[タスク説明/Issue番号] [--report でレポート出力]"
 **両方のケースで以下を実行:**
 
 1. ディレクトリが存在しない場合は作成
-2. ファイルを保存
-3. Issue番号が提供されている場合、GitHubにコメント:
+2. ファイルを保存（ここまでは自動で実行してよい）
+3. Issue番号が提供されている場合、**投稿前に必ずユーザーの承認を得る**:
+   - 投稿予定のコメント内容（本文全体、長い場合は要約と冒頭部分）をユーザーに提示する
+   - AskUserQuestionツールで「この内容でGitHub Issueにコメントを投稿してよいか」を確認する
+   - 承認が得られた場合のみ、次のコマンドで投稿する:
 
 ```bash
 gh issue comment {ISSUE_NUMBER} --body-file {ドキュメントのパス}
 ```
+
+   - 承認が得られなかった場合は投稿せず、ローカル保存のみで完了とする
 
 **コメント内容（バグの場合）:**
 - 調査完了の通知

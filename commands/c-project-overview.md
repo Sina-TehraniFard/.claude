@@ -1,6 +1,7 @@
 ---
 description: "プロジェクト全体構造レポートを生成"
 allowed-tools: "Read, Write, Glob, Grep, Bash, Task"
+disable-model-invocation: true
 ---
 
 # /c-project-overview
@@ -25,173 +26,28 @@ allowed-tools: "Read, Write, Glob, Grep, Bash, Task"
 
 ---
 
-## Step 1: 物理構造の把握
+## 調査手順
 
-プロジェクトのルートディレクトリを走査し、基本構造を把握します。
+以下の12観点を順に調査します。**レポートに書く内容と章立ては、後述の出力テンプレートを唯一の正とします**（この表は調査対象の定義のみ）。
 
-**実行内容**：
-1. ルートディレクトリ直下のファイル・フォルダ一覧を取得
-2. パッケージ定義ファイル（composer.json, package.json 等）を読み込み
-3. 言語・フレームワーク・主要ライブラリを特定
-
-**調査対象**：
-- ルート直下の主要フォルダ（src/, app/, config/, tests/, public/ など）
-- パッケージ管理ファイル
-- 設定ファイル群
-
----
-
-## Step 2: エントリポイントと実行経路
-
-アプリケーションの入口と処理の流れを特定します。
-
-**調査対象**：
-- HTTPエントリポイント（index.php, public/index.php など）
-- CLIスクリプト（bin/, console など）
-- ジョブ/キューの入口（jobs/, commands/ など）
-- ルーティング設定（routes.php, routes/ など）
-
-**出力内容**：
-- 代表的な1処理の実行経路を図示
-  - ルート定義 → コントローラ → サービス → 永続化
+| # | 観点 | 主な調査対象 |
+|---|------|-------------|
+| 1 | 物理構造 | ルート直下の主要フォルダ（src/, app/, config/, tests/, public/ 等）、パッケージ管理ファイル（composer.json, package.json 等）から言語・フレームワーク・主要ライブラリを特定 |
+| 2 | エントリポイントと実行経路 | HTTPエントリポイント（public/index.php 等）、CLIスクリプト（bin/, console）、ジョブ/キューの入口、ルーティング設定。代表的な1処理の経路（ルート定義 → コントローラ → サービス → 永続化）を追跡 |
+| 3 | 依存関係と外部サービス | dependencies、外部API呼び出し箇所、ミドルウェア設定、ストレージ（S3, GCS）・キュー（Redis, SQS）・キャッシュ（Memcache, Redis）設定 |
+| 4 | 設定・環境差分 | **.env.example を優先**、config/ 内のファイル、環境変数の定義と利用箇所、環境ごとの差分構造、設定のロード方式、秘密情報の管理方法（.gitignore での除外等） |
+| 5 | データモデル | マイグレーション、スキーマ定義（schema.sql, migrations/）、Entity / Model / Table / Repository クラス、主要テーブルと関係 |
+| 6 | ドメインロジック構造 | Service / UseCase / Domain / ValueObject の配置パターン、中心概念（Core Domain）の推定 |
+| 7 | プレゼンテーション層 | Controller、テンプレート（templates/, views/）、APIエンドポイント定義、レスポンス生成の仕組み |
+| 8 | セキュリティ（認証・認可） | 認証ミドルウェア / ガード、セッション管理、トークン管理、権限モデル（RBAC, ポリシー等） |
+| 9 | 横断的処理 | ロギング、キャッシュ利用箇所、例外ハンドリング、トランザクション管理 |
+| 10 | テストと品質保証 | tests/ の構造とテスト種別（Unit, Integration, Feature）、静的解析設定（phpstan.neon, .eslintrc 等）、CI/CD設定 |
+| 11 | ビルド・デプロイ | Dockerfile、docker-compose.yml、Makefile、CI/CDパイプライン設定 |
+| 12 | アーキテクチャ原則 | .editorconfig、phpcs.xml / .php-cs-fixer.php、ADR、ARCHITECTURE.md / CONTRIBUTING.md |
 
 ---
 
-## Step 3: 依存関係と外部サービス
-
-外部ライブラリと外部サービスの利用状況を整理します。
-
-**調査対象**：
-- composer.json / package.json の dependencies
-- 外部API呼び出し箇所
-- ミドルウェア設定
-- ストレージ設定（S3, GCS など）
-- キュー設定（Redis, SQS など）
-- キャッシュ設定（Memcache, Redis など）
-
----
-
-## Step 4: 設定・環境差分
-
-環境設定の構造を分析します。
-
-**調査対象**：
-- .env / .env.example
-- config/ ディレクトリ内のファイル
-- 環境変数の定義と利用箇所
-
-**確認ポイント**：
-- 環境ごとの差分構造
-- 設定のロード方式
-- 秘密情報の管理方法（.gitignore での除外等）
-
----
-
-## Step 5: データモデル（DB / 永続化）
-
-データベース構造とORMの利用状況を整理します。
-
-**調査対象**：
-- マイグレーションファイル
-- スキーマ定義（schema.sql, migrations/ など）
-- Entity / Model クラス
-- Table / Repository クラス
-
-**出力内容**：
-- 主要テーブルの一覧と役割
-- エンティティ間の関係（可能な範囲で）
-
----
-
-## Step 6: ドメインロジック構造
-
-ビジネスロジックの配置場所を特定します。
-
-**調査対象**：
-- Service クラス
-- UseCase クラス
-- Domain / Entity / ValueObject
-- その他ロジックの集約場所
-
-**出力内容**：
-- ロジックの配置パターン
-- 中心概念（Core Domain）の推定
-
----
-
-## Step 7: プレゼンテーション層
-
-UIとAPIの構造を整理します。
-
-**調査対象**：
-- Controller クラス
-- テンプレートファイル（templates/, views/ など）
-- APIエンドポイント定義
-- レスポンス生成の仕組み
-
----
-
-## Step 8: セキュリティ（認証・認可）
-
-認証・認可の仕組みを整理します。
-
-**調査対象**：
-- 認証ミドルウェア / ガード
-- セッション管理
-- トークン管理
-- 権限モデル（RBAC, ポリシー等）
-
----
-
-## Step 9: 横断的処理
-
-横断的関心事の実装を確認します。
-
-**調査対象**：
-- ロギング設定と実装
-- キャッシュ設定と利用箇所
-- 例外ハンドリング
-- トランザクション管理
-
----
-
-## Step 10: テストと品質保証
-
-テスト構造と品質管理ツールを確認します。
-
-**調査対象**：
-- tests/ ディレクトリの構造
-- テストの種類（Unit, Integration, Feature など）
-- 静的解析設定（phpstan.neon, .eslintrc など）
-- CI/CD設定（.github/workflows/, .gitlab-ci.yml など）
-
----
-
-## Step 11: ビルド・デプロイ
-
-ビルドとデプロイの仕組みを確認します。
-
-**調査対象**：
-- Dockerfile
-- docker-compose.yml
-- Makefile
-- CI/CD パイプライン設定
-
----
-
-## Step 12: アーキテクチャ原則
-
-コーディング規約と設計原則を推定します。
-
-**調査対象**：
-- .editorconfig
-- phpcs.xml / .php-cs-fixer.php
-- ADR（Architecture Decision Records）
-- ARCHITECTURE.md / CONTRIBUTING.md
-
----
-
-## Step 13: レポート生成
+## レポート生成
 
 収集した情報をMarkdownレポートとして出力します。
 
@@ -267,6 +123,11 @@ UIとAPIの構造を整理します。
 ---
 
 ## 重要な注意事項
+
+### 秘密情報の取り扱い
+- **.env の実際の値（トークン・パスワード・APIキー等）は絶対にレポートへ転記しない**
+- 環境変数はキー名と用途のみ記載する
+- 調査は .env.example を優先し、.env そのものの値は参照しない
 
 ### 推測の禁止
 - 確認できた事実のみを記載すること

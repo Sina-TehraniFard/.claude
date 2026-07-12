@@ -1,5 +1,5 @@
 ---
-description: "ベストプラクティス準拠のカスタムコマンドを生成・更新"
+description: "c- プレフィックス付きの個人用カスタムコマンド（~/.claude/commands/c-*.md）の生成・更新専用。プラグイン向けのコマンド作成（dev-be:create-command 等）とは役割が異なる"
 argument-hint: "[task description or 'interactive']"
 allowed-tools: "Read, Write, Edit, Glob, AskUserQuestion"
 ---
@@ -54,11 +54,10 @@ Claude Codeのベストプラクティスに準拠した高品質なカスタム
 **更新モードの場合**：
 
 1. 対象コマンドを特定
-   ```bash
-   # 既存コマンドの一覧を確認
-   ls ~/.claude/commands/c-*.md
-   ls .claude/commands/c-*.md 2>/dev/null
-   ```
+
+   **Globツール**で既存コマンドの一覧を確認します（Bashは使わない）：
+   - パターン: `c-*.md`、パス: `~/.claude/commands/`
+   - パターン: `c-*.md`、パス: `.claude/commands/`（プロジェクト側。存在しなければ結果は空でよい）
 
 2. 対象コマンドを読み込み
    ```
@@ -288,11 +287,21 @@ Question 2: "コマンドへの入力は何ですか？"
 
 ```yaml
 ---
-description: "簡潔な説明（30文字以内）"
+description: "簡潔な説明（自動起動させる場合はトリガー例を含める）"
 argument-hint: "[引数のヒント]"
 allowed-tools: "使用ツールのカンマ区切りリスト"
+disable-model-invocation: true  # 明示呼び出し専用にする場合のみ
 ---
 ```
+
+**モデル自動起動の設計（必ずヒアリングする）**：
+
+コマンド生成前に、ユーザーに次を確認します：
+
+**「このコマンドを、会話の流れでモデル（Claude）に自動起動させたいですか？ それとも `/c-xxx` と明示的に打ったときだけ動けばよいですか？」**
+
+- **明示呼び出し専用でよい** → frontmatter に `disable-model-invocation: true` を追加する（意図しない自動起動と、類似コマンド・スキルとの競合を防ぐ）
+- **自動起動もさせたい** → `description` に発話トリガー例（「〜して」「〜をお願い」のような実際の言い回し）を含め、既存の類似コマンド・スキルと明確に差別化する
 
 **allowed-toolsの選択基準**：
 
@@ -308,9 +317,10 @@ allowed-tools: "使用ツールのカンマ区切りリスト"
 
 ````markdown
 ---
-description: "[簡潔な説明]"
+description: "[簡潔な説明。自動起動させる場合はトリガー例を含める]"
 argument-hint: "[引数のヒント]"
 allowed-tools: "[ツールリスト]"
+disable-model-invocation: true  # ← 明示呼び出し専用の場合のみ。自動起動させる場合はこの行を削除
 ---
 
 # /c-コマンド名

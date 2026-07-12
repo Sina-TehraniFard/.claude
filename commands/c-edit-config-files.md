@@ -1,81 +1,78 @@
 ---
-description: "要件ベースで設定ファイルを編集"
-argument-hint: "[設定ファイルパス] [要件YAML/テキスト]"
-allowed-tools: "Read, Write, Edit, Glob, Grep, AskUserQuestion, Bash"
+description: "設定ファイル（JSON/YAML/XML/プロパティ等）を要件に基づき編集し、編集後のバリデーションと変更理由の記録まで行う"
+argument-hint: "[設定ファイルパス] [変更要件（自然言語）]"
+allowed-tools: "Read, Edit, Write, Glob, Grep, AskUserQuestion, Bash"
+disable-model-invocation: true
 ---
 
-# /edit-config-files
+# /c-edit-config-files
 
-要件定義に基づいて設定ファイル（XML, JSON, YAML, プロパティファイル等）を体系的に編集します。
-編集箇所の特定、変更内容の検証、整合性チェックまで自動化します。
+要件に基づいて設定ファイル（JSON, YAML, XML, INI, プロパティファイル等）を編集します。
+このコマンドの価値は「編集そのもの」ではなく、**変更計画の事前提示・編集後のバリデーション・変更理由の記録**にあります。
 
----
+## 引数
 
-## あなたの役割
+```
+$ARGUMENTS
+```
 
-あなたは設定ファイル編集の専門家です。以下の専門知識を持っています：
+- 第1引数: 編集対象の設定ファイルパス
+- 第2引数以降: 変更要件（自然言語で記述。Before/After形式や箇条書きでも可）
+- 引数が不足している場合のみ、AskUserQuestionツールで不足分（対象ファイルパス、変更内容）を質問して補ってください。ファイル種別を尋ねる必要はありません（次のStepで自動判定します）。
 
-- **ファイル形式の理解**: XML, JSON, YAML, INI, プロパティファイル等の構造解析
-- **要件の解釈**: 自然言語やYAML形式の要件を具体的な編集操作に変換
-- **整合性の保証**: 編集前後で設定の論理的整合性を維持
-- **バリデーション**: 編集後のファイルが仕様に準拠していることを確認
-- **トレーサビリティ**: 何をどう変更したか、理由と共に記録
+## Step 1: 対象ファイルの読み込みと形式の自動判定
 
----
+1. 対象ファイルをReadツールで読み込みます。ファイルが見つからない場合はGlobで近いパスを検索し、候補をユーザーに確認してください。
+2. 拡張子と内容から形式を自動判定します（JSON / YAML / XML / TOML / INI / .properties / .env など）。ユーザーに形式を尋ねてはいけません。
+3. ファイル固有の規約を観察して記録します:
+   - インデント幅（スペース/タブ）、クォートスタイル、キーの並び順
+   - コメントの有無と書式
+   - 同種の設定が既にどう書かれているか（既存パターンを踏襲するため）
 
-## Step 1: 入力の解析と要件の構造化
+## Step 2: 要件の解釈と変更計画の提示
 
-### 1.1 引数のパース
+1. 要件を具体的な編集操作のリストに変換します。各操作について以下を整理してください:
+   - 対象キー/要素のパス（例: `scripts.build`, `services.web.ports`）
+   - 変更種別（追加 / 変更 / 削除）
+   - 変更前の値 → 変更後の値
+   - この変更が必要な理由（要件との対応）
+2. 変更が他の設定と矛盾しないか確認します（例: 参照先キーの存在、ポート番号の重複、バージョン制約の整合）。
+3. 変更計画を表形式または箇条書きでユーザーに提示し、AskUserQuestionツールで承認を得てください（選択肢の例: 「この計画で編集する」「計画を修正したい」「中止する」）。
+4. 承認が得られるまで編集を実行してはいけません。
 
-引数が指定されている場合は解析、指定されていない場合は対話的に収集：
+## Step 3: 編集の実行
 
-<function_calls>
-<invoke name="AskUserQuestion">
-<parameter name="questions">[
-  {
-    "question": "編集対象のファイル種別は何ですか？",
-    "header": "ファイル種別",
-    "multiSelect": false,
-    "options": [
-      {
-        "label": "XML設定ファイル",
-        "description": "JMeter .jmx, Maven pom.xml, Spring設定等"
-      },
-      {
-        "label": "JSON設定ファイル",
-        "description": "package.json, tsconfig.json, VSCode設定等"
-      },
-      {
-        "label": "YAML設定ファイル",
-        "description": "Docker Compose, GitHub Actions, Kubernetes等"
-      },
-      {
-        "label": "プロパティファイル",
-        "description": ".properties, .ini, .env等"
-      }
-    ]
-  },
-  {
-    "question": "要件の指定方法を選択してください",
-    "header": "要件形式",
-    "multiSelect": false,
-    "options": [
-      {
-        "label": "自然言語で説明",
-        "description": "日本語や英語で変更内容を説明"
-      },
-      {
-        "label": "YAML形式で定義",
-        "description": "構造化された要件定義ファイル"
-      },
-      {
-        "label": "Before/After形式",
-        "description": "変更前後の設定値を明示"
-      },
-      {
-        "label": "対話的に入力",
-        "description": "ステップバイステップで要件を収集"
-      }
-    ]
-  }
-]
+- Editツールで計画どおりに編集します。ファイル全体の書き直しが不可避な場合のみWriteを使用してください。
+- Step 1で観察した既存の書式規約（インデント、クォート、並び順、コメントスタイル）を厳守します。
+- 計画にない変更（ついでの整形、キーの並べ替え等）は行いません。
+
+## Step 4: 編集後のバリデーション
+
+形式に応じて、Bashツールで構文チェックを実行します:
+
+- **JSON**: `jq . <ファイルパス> > /dev/null` （JSONC の場合はコメント起因のエラーを考慮し、その旨をユーザーに伝える）
+- **YAML**: `python3 -c "import yaml,sys; yaml.safe_load(open(sys.argv[1]))" <ファイルパス>`
+  - PyYAML がない環境では `ruby -ryaml -e "YAML.load_file(ARGV[0])" <ファイルパス>` を試す
+- **XML**: `xmllint --noout <ファイルパス>`
+- **TOML**: `python3 -c "import tomllib,sys; tomllib.load(open(sys.argv[1],'rb'))" <ファイルパス>`
+- **INI / .properties / .env**: 専用パーサがないため、Readで再読み込みして「キー=値の形式が保たれているか」「重複キーがないか」を目視確認
+
+追加で、プロジェクト固有の検証手段が明らかな場合は利用します（例: `package.json` なら `npm pkg get` や `node -e "require('./package.json')"`、Terraform なら `terraform validate`、GitHub Actions なら `actionlint` が存在すれば実行）。
+
+バリデーションに失敗した場合:
+1. エラー内容を確認して編集を修正し、再度バリデーションを実行します。
+2. 2回修正しても解消しない場合は、編集を元に戻すかどうかをユーザーに確認してください。
+
+## Step 5: 変更内容の報告
+
+最後に以下をまとめて報告します:
+
+1. **変更一覧**: 各変更の「対象キー / 変更前 → 変更後 / 理由」
+2. **バリデーション結果**: 実行したコマンドと結果
+3. **注意事項**: 再起動・再ビルドが必要か、他ファイルへの波及（例: lockファイルの更新が必要）があるか
+
+## 重要な注意事項
+
+- 憶測で値を決めない。要件から一意に決まらない値（ポート番号、バージョン等）はユーザーに確認する
+- 秘密情報（APIキー、パスワード等）を要件に含む場合、値をそのまま報告文に繰り返さない
+- git commit / push はユーザーから明示的に依頼されない限り行わない

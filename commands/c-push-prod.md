@@ -2,6 +2,7 @@
 description: "記事を本番環境にインポート・更新"
 argument-hint: "[記事パスまたはスラッグ]"
 allowed-tools: "Read, Bash, Glob, Edit, AskUserQuestion"
+disable-model-invocation: true
 ---
 
 # /c-push-prod
@@ -17,9 +18,23 @@ allowed-tools: "Read, Bash, Glob, Edit, AskUserQuestion"
 - 実行環境の検出（開発サーバ or ローカル）
 - 記事ファイルの特定
 - バリデーションの実行
+- **ユーザー承認の取得（インポート直前に必須）**
 - 本番環境へのインポート/更新
 - draft → published への移動
 - 結果の報告
+
+---
+
+## 接続情報（この定義を唯一の正とする）
+
+以降の手順に登場する IP・鍵パスはすべてここで定義した変数を参照する：
+
+```bash
+PROD_SSH_HOST=ubuntu@PROD_EC2_IP           # 本番EC2
+PROD_SSH_KEY=~/.ssh/scriptlab-ec2-key.pem   # EC2用SSH鍵（開発サーバ上）
+DEV_SERVER=DEV_SERVER_IP                      # 開発サーバ（LAN IP）
+DEV_SERVER_TS=DEV_SERVER_TS_IP                 # 開発サーバ（Tailscale IP、LAN不可時のフォールバック）
+```
 
 ---
 
@@ -47,8 +62,8 @@ CONTENT_DIR=/home/sina/workspace/scriptlab/slab-content
 
 ローカル環境の場合：
 ```
-開発サーバ（DEV_SERVER_IP）を経由してSSH接続
-接続できない場合は Tailscale IP（DEV_SERVER_TS_IP）を試す
+開発サーバ（${DEV_SERVER}）を経由してSSH接続
+接続できない場合は Tailscale IP（${DEV_SERVER_TS}）を試す
 ```
 
 ---
@@ -72,11 +87,19 @@ CONTENT_DIR=/home/sina/workspace/scriptlab/slab-content
 
 ### 2.3 ファイルの検索
 
-スラッグまたはファイル名のみの場合、`draft/` と `published/` を検索する：
+スラッグまたはファイル名のみの場合、まず完全一致で検索する：
 
 ```bash
-find ${CONTENT_DIR}/draft ${CONTENT_DIR}/published -name "${SLUG}.md" -o -name "*${SLUG}*.md" 2>/dev/null
+find ${CONTENT_DIR}/draft ${CONTENT_DIR}/published -name "${SLUG}.md" 2>/dev/null
 ```
+
+完全一致が0件の場合のみ、部分一致で検索する：
+
+```bash
+find ${CONTENT_DIR}/draft ${CONTENT_DIR}/published -name "*${SLUG}*.md" 2>/dev/null
+```
+
+**候補が複数見つかった場合、または部分一致でしか見つからず対象が曖昧な場合は、勝手に1件を選ばないこと**。候補一覧（フルパス）を提示し、AskUserQuestion でユーザーに選択させる。
 
 ### 2.4 引数が空の場合
 
@@ -115,10 +138,20 @@ DOCKER_COMPOSE_FILE=/home/sina/workspace/scriptlab/slab-wp/docker/docker-compose
 
 警告のみの場合：
 - 警告内容を表示
-- そのままインポートに進む（警告で止めない）
+- Step 3.5 の最終確認に進む（警告で止めない）
 
 成功の場合：
-- そのままインポートに進む
+- Step 3.5 の最終確認に進む
+
+### 3.5 インポート前の最終確認（必須・スキップ禁止）
+
+本番公開の前に、以下をユーザーに提示し、AskUserQuestion で承認を得る。**承認なしで Step 4 に進んではならない**：
+
+- 対象ファイルのフルパス
+- 記事タイトル（フロントマターから取得）
+- 公開先: https://scriptlab.jp（新規作成 or 更新の別も分かれば提示）
+
+承認が得られなければ中止し、修正・ファイル再選択など次のアクションを確認する。
 
 ---
 
@@ -126,20 +159,22 @@ DOCKER_COMPOSE_FILE=/home/sina/workspace/scriptlab/slab-wp/docker/docker-compose
 
 ### 4.1 インポートコマンド
 
+接続先は冒頭の「接続情報」を参照。
+
 開発サーバから実行：
 ```bash
 cd ${IMPORTER_DIR} && \
-PROD_SSH_KEY=~/.ssh/scriptlab-ec2-key.pem \
-PROD_SSH_HOST=ubuntu@PROD_EC2_IP \
+PROD_SSH_KEY=${PROD_SSH_KEY} \
+PROD_SSH_HOST=${PROD_SSH_HOST} \
 ./scripts/import-posts.sh --env production "${ARTICLE_PATH}"
 ```
 
 ローカルから実行（開発サーバ経由）：
 ```bash
-ssh DEV_SERVER_IP 'cd /home/sina/workspace/scriptlab/slab-importer && \
-PROD_SSH_KEY=~/.ssh/scriptlab-ec2-key.pem \
-PROD_SSH_HOST=ubuntu@PROD_EC2_IP \
-./scripts/import-posts.sh --env production "${ARTICLE_PATH}"'
+ssh ${DEV_SERVER} "cd /home/sina/workspace/scriptlab/slab-importer && \
+PROD_SSH_KEY=${PROD_SSH_KEY} \
+PROD_SSH_HOST=${PROD_SSH_HOST} \
+./scripts/import-posts.sh --env production '${ARTICLE_PATH}'"
 ```
 
 ### 4.2 インポート結果の確認
@@ -188,8 +223,7 @@ mv ${CONTENT_DIR}/draft/[ファイル名].md ${CONTENT_DIR}/published/[ファイ
 ### 環境変数
 
 開発サーバでの作業時は以下を使用：
-- `PROD_SSH_KEY=~/.ssh/scriptlab-ec2-key.pem`
-- `PROD_SSH_HOST=ubuntu@PROD_EC2_IP`
+- `PROD_SSH_KEY` / `PROD_SSH_HOST`: 冒頭の「接続情報」を参照
 - `DOCKER_COMPOSE_FILE=/home/sina/workspace/scriptlab/slab-wp/docker/docker-compose.yml`
 
 ### フロントマターの形式
@@ -218,7 +252,7 @@ category:
 
 ```
 対応:
-1. SSH鍵のパスを確認: ~/.ssh/scriptlab-ec2-key.pem
+1. SSH鍵のパスを確認: ${PROD_SSH_KEY}（冒頭の「接続情報」を参照）
 2. EC2インスタンスの状態を確認
 3. セキュリティグループの設定を確認
 ```

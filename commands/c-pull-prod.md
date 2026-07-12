@@ -2,6 +2,7 @@
 description: "本番環境のデータをローカルにコピー"
 argument-hint: "[--db-only | --uploads-only | --skip-plugins]"
 allowed-tools: "Bash, Read, Glob, AskUserQuestion"
+disable-model-invocation: true
 ---
 
 # /c-pull-prod
@@ -24,6 +25,22 @@ allowed-tools: "Bash, Read, Glob, AskUserQuestion"
 
 ---
 
+## 接続情報（この定義を唯一の正とする）
+
+以降の手順に登場する IP・鍵パス・URL はすべてここで定義した変数を参照する：
+
+```bash
+PROD_EC2=ubuntu@PROD_EC2_IP                # 本番EC2
+PROD_SSH_KEY=~/.ssh/scriptlab-ec2-key.pem   # EC2用SSH鍵（ローカルまたは開発サーバ上）
+DEV_SERVER=DEV_SERVER_IP                      # 開発サーバ（LAN IP）
+DEV_SERVER_TS=DEV_SERVER_TS_IP                 # 開発サーバ（Tailscale IP、固定）
+LOCAL_URL=http://DEV_SERVER_IP                # ローカルWordPressのサイトURL
+```
+
+**フォールバック**: `${DEV_SERVER}` に接続できない場合、ユーザーが外出先にいる可能性がある。Tailscale IP `${DEV_SERVER_TS}` に差し替えて再試行すること。
+
+---
+
 ## 引数の扱い
 
 | 引数 | 動作 |
@@ -43,17 +60,20 @@ allowed-tools: "Bash, Read, Glob, AskUserQuestion"
 
 ```bash
 # 方法1: EC2に直接SSH（ローカルに鍵がある場合）
-ssh -o BatchMode=yes -o ConnectTimeout=5 -i ~/.ssh/scriptlab-ec2-key.pem ubuntu@PROD_EC2_IP 'echo ok'
+ssh -o BatchMode=yes -o ConnectTimeout=5 -i ${PROD_SSH_KEY} ${PROD_EC2} 'echo ok'
 
 # 方法2: 開発サーバ経由（鍵が開発サーバにある場合）
-ssh -o BatchMode=yes -o ConnectTimeout=5 DEV_SERVER_IP 'ssh -o ConnectTimeout=5 -i ~/.ssh/scriptlab-ec2-key.pem ubuntu@PROD_EC2_IP "echo ok"'
+ssh -o BatchMode=yes -o ConnectTimeout=5 ${DEV_SERVER} "ssh -o ConnectTimeout=5 -i ${PROD_SSH_KEY} ${PROD_EC2} 'echo ok'"
+
+# 方法2': 方法2で DEV_SERVER に繋がらない場合は Tailscale IP で再試行
+ssh -o BatchMode=yes -o ConnectTimeout=5 ${DEV_SERVER_TS} "ssh -o ConnectTimeout=5 -i ${PROD_SSH_KEY} ${PROD_EC2} 'echo ok'"
 ```
 
 接続成功した方法を `SSH_CMD` として以降で使用：
-- 方法1: `SSH_CMD="ssh -i ~/.ssh/scriptlab-ec2-key.pem ubuntu@PROD_EC2_IP"`
-- 方法2: `SSH_CMD="ssh DEV_SERVER_IP 'ssh -i ~/.ssh/scriptlab-ec2-key.pem ubuntu@PROD_EC2_IP'"`
+- 方法1: `SSH_CMD="ssh -i ${PROD_SSH_KEY} ${PROD_EC2}"`
+- 方法2: `SSH_CMD="ssh ${DEV_SERVER} 'ssh -i ${PROD_SSH_KEY} ${PROD_EC2}'"`（Tailscale経由の場合は `${DEV_SERVER}` を `${DEV_SERVER_TS}` に読み替え）
 
-どちらも失敗した場合はエラーを報告して終了。
+すべて失敗した場合はエラーを報告して終了。
 
 ### 1.2 ローカル環境の確認
 
@@ -67,9 +87,11 @@ docker compose -f docker/docker-compose.yml up -d wpcli
 
 ### 1.3 環境設定
 
+接続先は冒頭の「接続情報」を参照。
+
 ```
 本番URL: https://scriptlab.jp
-ローカルURL: http://DEV_SERVER_IP
+ローカルURL: ${LOCAL_URL}
 本番Docker Compose: /home/ubuntu/slab-wp/docker/docker-compose.prod.yml
 ローカルDocker Compose: docker/docker-compose.yml
 WP-CLI（本番）: docker compose -f docker-compose.prod.yml exec -T wpcli wp
@@ -123,14 +145,23 @@ ${SSH_CMD} 'docker cp slab-wpcli:/tmp/prod-dump.sql /tmp/prod-dump.sql'
 ```bash
 # SSH接続方法に応じた転送
 # 方法1（直接接続の場合）:
-scp -i ~/.ssh/scriptlab-ec2-key.pem ubuntu@PROD_EC2_IP:/tmp/prod-dump.sql /tmp/prod-dump.sql
+scp -i ${PROD_SSH_KEY} ${PROD_EC2}:/tmp/prod-dump.sql /tmp/prod-dump.sql
 
 # 方法2（開発サーバ経由の場合）:
-ssh DEV_SERVER_IP 'scp -i ~/.ssh/scriptlab-ec2-key.pem ubuntu@PROD_EC2_IP:/tmp/prod-dump.sql /tmp/prod-dump.sql'
-scp DEV_SERVER_IP:/tmp/prod-dump.sql /tmp/prod-dump.sql
+ssh ${DEV_SERVER} "scp -i ${PROD_SSH_KEY} ${PROD_EC2}:/tmp/prod-dump.sql /tmp/prod-dump.sql"
+scp ${DEV_SERVER}:/tmp/prod-dump.sql /tmp/prod-dump.sql
 ```
 
 ### 3.3 ローカルDBのリセットとインポート
+
+**実行前に必ずユーザーの承認を得ること**: `wp db reset` はローカルDBを完全に消去する（ローカルにしか存在しない下書き記事等も消える）。AskUserQuestion でその旨を提示し、承認を得てから実行する。ユーザーが希望する場合は先にローカルDBのバックアップを取る：
+
+```bash
+# （任意）ローカルDBの退避ダンプ
+./scripts/dev.sh wp db export /tmp/local-backup-$(date +%s).sql
+```
+
+承認後に実行：
 
 ```bash
 # SQLダンプをwpcliコンテナにコピー
@@ -145,10 +176,10 @@ docker cp /tmp/prod-dump.sql scriptlab-wpcli:/tmp/prod-dump.sql
 
 ```bash
 # ドライランで確認
-./scripts/dev.sh wp search-replace 'https://scriptlab.jp' 'http://DEV_SERVER_IP' --all-tables --dry-run
+./scripts/dev.sh wp search-replace 'https://scriptlab.jp' "${LOCAL_URL}" --all-tables --dry-run
 
 # 実行
-./scripts/dev.sh wp search-replace 'https://scriptlab.jp' 'http://DEV_SERVER_IP' --all-tables
+./scripts/dev.sh wp search-replace 'https://scriptlab.jp' "${LOCAL_URL}" --all-tables
 ```
 
 ---
@@ -168,7 +199,7 @@ ${SSH_CMD} 'docker exec slab-wordpress tar -czf /tmp/uploads.tar.gz -C /var/www/
 
 ```bash
 # SSH接続方法に応じた転送（Step 3.2と同様の分岐）
-scp -i ~/.ssh/scriptlab-ec2-key.pem ubuntu@PROD_EC2_IP:/tmp/uploads.tar.gz /tmp/uploads.tar.gz
+scp -i ${PROD_SSH_KEY} ${PROD_EC2}:/tmp/uploads.tar.gz /tmp/uploads.tar.gz
 ```
 
 ### 4.3 ローカルuploadsの置換
@@ -257,14 +288,14 @@ ${SSH_CMD} 'rm -f /tmp/prod-dump.sql /tmp/uploads.tar.gz'
 
 | 項目         | 本番  | ローカル |
 |-------------|-------|---------|
-| サイトURL    | https://scriptlab.jp | http://DEV_SERVER_IP |
+| サイトURL    | https://scriptlab.jp | ${LOCAL_URL} |
 | 記事数       | XX件  | XX件    |
 | 固定ページ   | XX件  | XX件    |
 | カテゴリ     | XX件  | XX件    |
 | プラグイン   | XX件  | XX件    |
 | uploads     | XXM   | XXM     |
 
-http://DEV_SERVER_IP で動作確認してください。
+${LOCAL_URL} で動作確認してください。
 ```
 
 ---
@@ -275,9 +306,9 @@ http://DEV_SERVER_IP で動作確認してください。
 
 ```
 対応:
-1. SSH鍵の存在を確認: ls -la ~/.ssh/scriptlab-ec2-key.pem
+1. SSH鍵の存在を確認: ls -la ${PROD_SSH_KEY}
 2. EC2インスタンスの状態を確認
-3. 開発サーバ経由の接続を試行
+3. 開発サーバ経由の接続を試行（LAN不可なら Tailscale IP ${DEV_SERVER_TS} を試す）
 ```
 
 ### DBインポートエラー
