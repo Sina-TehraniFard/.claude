@@ -73,3 +73,7 @@ backups/
 usage-data/
 sessions/
 *.bak
+.last-cleanup
+.last-update-result.json
+mcp-needs-auth-cache.json
+security/

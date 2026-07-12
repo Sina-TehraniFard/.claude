@@ -5,7 +5,9 @@
       "Bash",
       "Read",
       "Edit",
-      "Write"
+      "Write",
+      "WebFetch",
+      "WebSearch"
     ],
     "deny": [
       "Read(*.token)",
@@ -25,14 +27,28 @@
       "Write(*env*)",
       "Write(*.env)",
       "Write(*.env.*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(sudo:*)"
     ],
     "disableBypassPermissionsMode": "disable"
   },
-  "model": "sonnet",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -e '.tool_input.command | contains(\"--allow-write\")' >/dev/null 2>&1 && echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"ask\",\"permissionDecisionReason\":\"DB書き込み（--allow-write）の実行確認\"}}' || true"
+          }
+        ]
+      }
+    ]
+  },
+  "model": "claude-fable-5[1m]",
   "statusLine": {
     "type": "command",
-    "command": "npx -y @owloops/claude-powerline@latest --config /Users/tehrani/.claude/claude-powerline.json 2>/dev/null"
+    "command": "npx -y @owloops/claude-powerline@1.27.1 --config /Users/tehrani/.claude/claude-powerline.json 2>/dev/null"
   },
   "enabledPlugins": {
     "php-lsp@claude-plugins-official": true,
@@ -42,11 +58,17 @@
     "development-backend@asken-claude-code-marketplace": true,
     "development-mobile@asken-claude-code-marketplace": true,
     "plugin-dev@claude-code-plugins": true,
-    "rust-analyzer-lsp@claude-plugins-official": true
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "feature-test@asken-claude-code-marketplace": true,
+    "frontend-design@claude-plugins-official": true,
+    "development-common@asken-claude-code-marketplace": true,
+    "investigation-be@asken-claude-code-marketplace": true,
+    "newrelic-monitor@asken-claude-code-marketplace": true,
+    "review-tools@asken-claude-code-marketplace": true,
+    "dev-infra@asken-claude-code-marketplace": true,
+    "tech-blog@asken-claude-code-marketplace": true,
+    "cursor-agent@asken-claude-code-marketplace": true
   },
-  "language": "日本語",
-  "effortLevel": "medium",
-  "voiceEnabled": true,
   "extraKnownMarketplaces": {
     "claude-code-warp": {
       "source": {
@@ -54,5 +76,20 @@
         "repo": "warpdotdev/claude-code-warp"
       }
     }
-  }
+  },
+  "language": "日本語",
+  "feedbackSurveyRate": 0,
+  "alwaysThinkingEnabled": false,
+  "effortLevel": "high",
+  "promptSuggestionEnabled": false,
+  "awaySummaryEnabled": false,
+  "tui": "fullscreen",
+  "voice": {
+    "enabled": true,
+    "mode": "hold"
+  },
+  "skipWorkflowUsageWarning": true,
+  "theme": "dark",
+  "verbose": false,
+  "voiceEnabled": true
 }
