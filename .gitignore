@@ -51,6 +51,8 @@ projects/
 .credentials.json
 settings.local.json
 settings.json
+secrets/
+mcp.json
 
 # IDE一時ファイル
 ide/
