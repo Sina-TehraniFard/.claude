@@ -77,3 +77,9 @@ sessions/
 .last-update-result.json
 mcp-needs-auth-cache.json
 security/
+
+# ランタイムのデーモン・ジョブ管理（PID・認証キー等を含む一時状態）
+daemon.lock
+daemon.status.json
+daemon/
+jobs/

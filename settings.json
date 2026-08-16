@@ -1,4 +1,7 @@
 {
+  "env": {
+    "CLAUDE_CODE_DISABLE_MOUSE_CLICKS": "1"
+  },
   "includeCoAuthoredBy": false,
   "permissions": {
     "allow": [
@@ -7,7 +10,8 @@
       "Edit",
       "Write",
       "WebFetch",
-      "WebSearch"
+      "WebSearch",
+      "mcp__notion"
     ],
     "deny": [
       "Read(*.token)",
@@ -24,14 +28,17 @@
       "Edit(*env*)",
       "Edit(*.env)",
       "Edit(*.env.*)",
-      "Write(*env*)",
-      "Write(*.env)",
-      "Write(*.env.*)",
       "Bash(git push:*)",
-      "Bash(sudo:*)"
+      "Bash(sudo:*)",
+      "mcp__notion__notion-delete-page",
+      "mcp__notion__notion-delete-pages",
+      "mcp__notion__notion-delete-database",
+      "mcp__notion__notion-delete-blocks",
+      "mcp__notion__notion-delete-comment"
     ],
     "disableBypassPermissionsMode": "disable"
   },
+  "model": "sonnet",
   "hooks": {
     "PreToolUse": [
       {
@@ -45,7 +52,6 @@
       }
     ]
   },
-  "model": "claude-fable-5[1m]",
   "statusLine": {
     "type": "command",
     "command": "npx -y @owloops/claude-powerline@1.27.1 --config /Users/tehrani/.claude/claude-powerline.json 2>/dev/null"
