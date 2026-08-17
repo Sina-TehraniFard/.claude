@@ -83,3 +83,8 @@ daemon.lock
 daemon.status.json
 daemon/
 jobs/
+
+# 通知システムのコンパイル済みバイナリ（setup.shで再生成）
+hooks/bin/
+# 通知システムの実行時状態
+hooks/state/

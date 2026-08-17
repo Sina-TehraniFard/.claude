@@ -8,7 +8,9 @@
 
 VOLUME=0.2  # 通知音の音量（0.0〜1.0）
 SOUND=/System/Library/Sounds/Tink.aiff
+STYLE=system  # toast=自前のふわっとトースト / system=macOS通知センター
 NOTIFIER="$HOME/.claude/hooks/Claude Code.app/Contents/MacOS/terminal-notifier"
+TOAST="$HOME/.claude/hooks/bin/claude-toast"
 
 input=$(cat)
 msg=$(jq -r '.message // empty' <<<"$input" 2>/dev/null)
@@ -30,12 +32,21 @@ if [[ "$front" == *"WezTerm"* && -n "$WEZTERM_PANE" ]]; then
 fi
 
 if [ -n "$WEZTERM_PANE" ]; then
-  click="/usr/bin/open -a WezTerm && /opt/homebrew/bin/wezterm cli activate-pane --pane-id $WEZTERM_PANE"
+  click="$HOME/.claude/hooks/focus-pane.sh $WEZTERM_PANE"
+  # 未閲覧通知の状態を記録（wezterm.lua がフォーカス復帰時に削除、jump-to-notified.sh が参照）
+  mkdir -p "$HOME/.claude/hooks/state/notified"
+  touch "$HOME/.claude/hooks/state/notified/$WEZTERM_PANE"
 else
   click="/usr/bin/open -a WezTerm"
 fi
 
-"$NOTIFIER" -title "$project" -message "$msg" \
-  -group "claude-code-${WEZTERM_PANE:-default}" -execute "$click" >/dev/null 2>&1
+if [ "$STYLE" = "toast" ] && [ -x "$TOAST" ]; then
+  # トーストは自前でクリック処理・フォーカス自動消去を持つ（クリックハンドラ不要）
+  nohup "$TOAST" -title "$project" -message "$msg" \
+    ${WEZTERM_PANE:+-pane "$WEZTERM_PANE"} >/dev/null 2>&1 &
+else
+  "$NOTIFIER" -title "$project" -message "$msg" \
+    -group "claude-code-${WEZTERM_PANE:-default}" -execute "$click" >/dev/null 2>&1
+fi
 afplay -v "$VOLUME" "$SOUND" >/dev/null 2>&1 &
 exit 0
