@@ -13,6 +13,11 @@ NOTIFIER="$HOME/.claude/hooks/Claude Code.app/Contents/MacOS/terminal-notifier"
 input=$(cat)
 msg=$(jq -r '.message // empty' <<<"$input" 2>/dev/null)
 [ -z "$msg" ] && msg="${1:-応答が完了しました}"
+
+# アイドル通知はStop hookの「応答が完了しました」と重複するので無視
+case "$msg" in
+  *"waiting for your input"*) exit 0 ;;
+esac
 cwd=$(jq -r '.cwd // empty' <<<"$input" 2>/dev/null)
 project=$(basename "${cwd:-$PWD}")
 
