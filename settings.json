@@ -38,7 +38,7 @@
     ],
     "disableBypassPermissionsMode": "disable"
   },
-  "model": "sonnet",
+  "model": "fable[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -106,7 +106,7 @@
   "language": "日本語",
   "feedbackSurveyRate": 0,
   "alwaysThinkingEnabled": false,
-  "effortLevel": "high",
+  "effortLevel": "medium",
   "promptSuggestionEnabled": false,
   "awaySummaryEnabled": false,
   "tui": "fullscreen",

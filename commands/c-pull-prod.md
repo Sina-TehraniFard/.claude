@@ -30,11 +30,9 @@ disable-model-invocation: true
 以降の手順に登場する IP・鍵パス・URL はすべてここで定義した変数を参照する：
 
 ```bash
-PROD_EC2=ubuntu@PROD_EC2_IP                # 本番EC2
+source ~/.claude/local.env               # DEV_SERVER / DEV_SERVER_TS / PROD_EC2 を読み込む（git管理外）
 PROD_SSH_KEY=~/.ssh/scriptlab-ec2-key.pem   # EC2用SSH鍵（ローカルまたは開発サーバ上）
-DEV_SERVER=DEV_SERVER_IP                      # 開発サーバ（LAN IP）
-DEV_SERVER_TS=DEV_SERVER_TS_IP                 # 開発サーバ（Tailscale IP、固定）
-LOCAL_URL=http://DEV_SERVER_IP                # ローカルWordPressのサイトURL
+LOCAL_URL=http://${DEV_SERVER}              # ローカルWordPressのサイトURL
 ```
 
 **フォールバック**: `${DEV_SERVER}` に接続できない場合、ユーザーが外出先にいる可能性がある。Tailscale IP `${DEV_SERVER_TS}` に差し替えて再試行すること。

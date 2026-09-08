@@ -2,10 +2,8 @@
 
 ## ネットワーク / サーバー接続
 
-- 開発サーバー（sina）の静的LAN IP: `DEV_SERVER_IP`
-- Tailscale IP: `DEV_SERVER_TS_IP`（固定、変わらない）
-- MacのTailscale IP: `MAC_TS_IP`
-- `DEV_SERVER_IP` への接続で問題が出たら、ユーザーが外出先にいる可能性がある。Tailscale IP `DEV_SERVER_TS_IP` を試すよう提案すること
+- 接続先の IP は `~/.claude/local.env` に定義している（git 管理外）。参照が必要なときは `cat ~/.claude/local.env` で読むこと
+- `DEV_SERVER`（LAN IP）への接続で問題が出たら、ユーザーが外出先にいる可能性がある。`DEV_SERVER_TS`（Tailscale IP、固定）を試すよう提案すること
 
 ## agent-browser（ヘッドレスブラウザ CLI）
 

@@ -1,6 +1,6 @@
 ---
 name: luchida-release
-description: Luchida プロジェクト専用の一連リリースフロー（feature PR マージ、release/vX.Y.Z 作成、package.json 4 ファイル bump、develop/main マージ、タグ作成、GitHub Release 作成、back-merge、PM2 再起動判断）を要所でユーザー確認を取りながら実行する。「luchida のリリース作って」「luchida を v0.X.Y として進めて」「luchida をマージしてリリースまで進めて」のように Luchida を明示したリクエストでのみ使用。Luchida 以外のプロジェクトのリリース依頼では使用しない。
+description: Luchida プロジェクト専用の一連リリースフロー（feature PR マージ、release/vX.Y.Z 作成、全 workspace の package.json bump、develop/main マージ、タグ作成、GitHub Release 作成、back-merge、PM2 再起動判断）を要所でユーザー確認を取りながら実行する。「luchida のリリース作って」「luchida を v0.X.Y として進めて」「luchida をマージしてリリースまで進めて」のように Luchida を明示したリクエストでのみ使用。Luchida 以外のプロジェクトのリリース依頼では使用しない。
 allowed-tools: Bash, Read, Edit, AskUserQuestion
 ---
 
@@ -11,7 +11,7 @@ Luchida プロジェクト（Sina-TehraniFard/luchida）の **feature PR マー�
 ## 前提情報（hardcoded）
 
 - リポジトリ: `Sina-TehraniFard/luchida`
-- bump 対象: `package.json` / `packages/backend/package.json` / `packages/backtest/package.json` / `packages/frontend/package.json`
+- bump 対象: ルート `package.json` と `packages/*/package.json` の全 workspace（`npm version --workspaces --include-workspace-root` で 1 コマンド。workspace 間の依存指定は `*` 固定なので更新不要。#435）
 - PM2 プロセス名: `luchida-backend`
 - ポジション確認 DB: `postgresql://luchida:luchida@localhost:5432/luchida`、`positions` テーブル
 - back-merge ブランチ命名: `sync/main-to-develop-vX.Y.Z`
@@ -68,16 +68,17 @@ git fetch origin --quiet
 git checkout -b release/v{NEW_VERSION} origin/develop
 ```
 
-`Edit` ツールで以下 4 ファイルの version を bump:
-- `package.json` (`"name": "luchida"`)
-- `packages/backend/package.json` (`"name": "@luchida/backend"`)
-- `packages/backtest/package.json` (`"name": "@luchida/backtest"`)
-- `packages/frontend/package.json` (`"name": "@luchida/frontend"`)
-
-各ファイルとも `"version": "OLD"` → `"version": "NEW"`。
+ルートと全 workspace（backend / backtest / frontend / contracts、今後追加されるものも含む）の version を 1 コマンドで揃える。手で 1 ファイルずつ書き換えない（上げ忘れが出る。#435）:
 
 ```bash
-git add package.json packages/backend/package.json packages/backtest/package.json packages/frontend/package.json
+npm version {NEW_VERSION} --workspaces --include-workspace-root --no-git-tag-version
+git diff --stat   # ルート + packages/*/package.json が全部 {NEW_VERSION} になっていること
+```
+
+workspace 間の依存指定（例: backend の `"@luchida/contracts": "*"`）は `*` 固定なので更新不要。`npm ls` が `invalid` を出したら依存指定に固定バージョンが紛れているので `*` に直す。
+
+```bash
+git add package.json packages/*/package.json
 git commit -m "chore(release): v{NEW_VERSION}"
 git push -u origin release/v{NEW_VERSION}
 ```
@@ -141,7 +142,7 @@ v{NEW_VERSION} パッチアップリリース。{ISSUE_SCOPE}
 ## 主な変更点 (since v{PREV_VERSION})
 
 - **#{FEATURE_PR_NUMBER}**: {FEATURE_DESCRIPTION}
-- **#{RELEASE_PR_NUMBER}**: package.json 4 ファイルを v{NEW_VERSION} へ bump
+- **#{RELEASE_PR_NUMBER}**: 全 workspace の package.json を v{NEW_VERSION} へ bump
 
 ## マージ後手順
 

@@ -30,10 +30,9 @@ disable-model-invocation: true
 以降の手順に登場する IP・鍵パスはすべてここで定義した変数を参照する：
 
 ```bash
-PROD_SSH_HOST=ubuntu@PROD_EC2_IP           # 本番EC2
+source ~/.claude/local.env               # DEV_SERVER / DEV_SERVER_TS / PROD_EC2 を読み込む（git管理外）
+PROD_SSH_HOST=${PROD_EC2}                   # 本番EC2
 PROD_SSH_KEY=~/.ssh/scriptlab-ec2-key.pem   # EC2用SSH鍵（開発サーバ上）
-DEV_SERVER=DEV_SERVER_IP                      # 開発サーバ（LAN IP）
-DEV_SERVER_TS=DEV_SERVER_TS_IP                 # 開発サーバ（Tailscale IP、LAN不可時のフォールバック）
 ```
 
 ---

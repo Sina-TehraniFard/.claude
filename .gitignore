@@ -88,3 +88,6 @@ jobs/
 hooks/bin/
 # 通知システムの実行時状態
 hooks/state/
+
+# ローカル環境固有の接続情報（IP等）
+local.env
