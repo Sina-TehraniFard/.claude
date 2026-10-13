@@ -91,3 +91,6 @@ hooks/state/
 
 # ローカル環境固有の接続情報（IP等）
 local.env
+
+# claude.ai から自動同期されるスキル
+skills/synced/

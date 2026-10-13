@@ -1,7 +1,4 @@
 {
-  "env": {
-    "CLAUDE_CODE_DISABLE_MOUSE_CLICKS": "1"
-  },
   "includeCoAuthoredBy": false,
   "permissions": {
     "allow": [
@@ -38,7 +35,6 @@
     ],
     "disableBypassPermissionsMode": "disable"
   },
-  "model": "fable[1m]",
   "hooks": {
     "PreToolUse": [
       {
