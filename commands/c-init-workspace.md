@@ -46,7 +46,7 @@ Step 2 で根拠が見つからなかった項目だけを、AskUserQuestion で
 
 `~/.claude/assets/workspace/` のひな形を写し、`{...}` を Step 2・3 の結果で埋める。埋められない欄は「未確認」と書く。
 - `.claude/CLAUDE.md`: 既に親フォルダに `CLAUDE.md` があれば、その中身を `.claude/CLAUDE.md` に統合し、元のファイルを消すかを AskUserQuestion で聞く
-- `.claude/settings.json`: 既にあれば `hooks` だけを足す
+- `.claude/settings.json`: ひな形 `settings.hooks.json` から作る。既にあれば `hooks` だけを足す
 - `.claude/workspace.md`
 - `ai-docs/INDEX.md`、`ai-docs/lessons.md`、`ai-docs/env/task-workflow.md`
 - 空のフォルダ `ai-docs/context/`、`ai-docs/decisions/`、`ai-docs/tasks/`、`ai-docs/inbox/`
