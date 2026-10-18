@@ -68,10 +68,6 @@
       }
     ]
   },
-  "statusLine": {
-    "type": "command",
-    "command": "npx -y @owloops/claude-powerline@1.27.1 --config /Users/tehrani/.claude/claude-powerline.json 2>/dev/null"
-  },
   "enabledPlugins": {
     "php-lsp@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
